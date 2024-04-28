@@ -1,9 +1,11 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
+use std::fmt;
 
 use axum::{
-    http::{HeaderName, HeaderValue, Method, Request, StatusCode},
+    http::{HeaderMap, HeaderName, HeaderValue, Method, Request, StatusCode},
     response::{Html, IntoResponse, Response},
     routing::get,
+    extract::Query,
     Router,
 };
 use clap::{value_parser, Arg, ArgAction, Command};
@@ -14,6 +16,7 @@ use tower_http::{
 };
 use tracing::{info_span, instrument, Level, Span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use serde::Deserialize;
 
 fn cmd() -> Command {
     Command::new("amacerels-musings")
@@ -105,11 +108,15 @@ async fn run_app(address: String, port: String) {
             .unwrap()
     );
 
+
     // TODO: security headers
     // TODO: global 404 handler with Span
     // TODO: error handling and on error request.
     // TODO: get span with IP addr
-    let app = Router::new().route("/", get(index)).layer(
+    let app = Router::new()
+        .route("/", get(index))
+        .route("/redirect", get(redirect))
+        .layer(
         // add middlewear, this is executed from top to bottom
         ServiceBuilder::new()
             // set `x-request-id` header on all requests and propogate to response
@@ -193,4 +200,38 @@ async fn index() -> Html<String> {
 async fn handler_404() -> impl IntoResponse {
     tracing::warn!("Path not found.");
     (StatusCode::NOT_FOUND, Html(include_str!("./templates/404.html").to_string()))
+}
+
+
+
+#[derive(Deserialize)]
+struct RedirectParams {
+    target: RedirectTarget
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum RedirectTarget {
+    Github,
+    LinkedIn
+}
+
+impl fmt::Display for RedirectTarget {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let url = match &self {
+            RedirectTarget::Github => "https://github.com/alixmacdonald10",
+            RedirectTarget::LinkedIn => "https://linkedin.com/in/alixmac"
+        }; 
+        write!(f, "{}", url)
+    }
+}
+
+async fn redirect(params: Query<RedirectParams>) -> impl IntoResponse {
+     
+    let url = format!("{}", params.target);
+    tracing::debug!("Redirecting to {}", &url);
+    
+    let mut headers = HeaderMap::new();
+    headers.insert("HX-Redirect", url.parse().unwrap());
+    (StatusCode::PERMANENT_REDIRECT, headers)
 }
