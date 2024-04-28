@@ -1,0 +1,17 @@
+[package]
+name = "amackerels-musings"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.7.5", features = ["tracing"] }
+clap = { version = "4.5.4", features = ["env"] }
+tokio = { version = "1.37.0", features = ["full"] }
+tower = "0.4.13"
+tower-http = { version = "0.5.2", features = ["trace", "request-id", "cors", "propagate-header"] }
+tower_governor = { version = "0.4.2", features = ["axum", "tracing"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+uuid = { version = "1.8.0", features = ["v4"] }
