@@ -1,6 +1,7 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 use std::fmt;
 
+use askama::Template;
 use axum::{
     http::{HeaderMap, HeaderName, HeaderValue, Method, Request, StatusCode},
     response::{Html, IntoResponse, Response},
@@ -10,11 +11,11 @@ use axum::{
 };
 use clap::{value_parser, Arg, ArgAction, Command};
 use tower::ServiceBuilder;
-use tower_governor::{governor::{GovernorConfig, GovernorConfigBuilder}, key_extractor::SmartIpKeyExtractor, GovernorLayer};
+use tower_governor::{governor::GovernorConfigBuilder, key_extractor::SmartIpKeyExtractor, GovernorLayer};
 use tower_http::{
     classify::ServerErrorsFailureClass, cors::CorsLayer, propagate_header::PropagateHeaderLayer, request_id::{MakeRequestUuid, SetRequestIdLayer}, trace::TraceLayer
 };
-use tracing::{info_span, instrument, Level, Span};
+use tracing::{info_span, Level, Span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use serde::Deserialize;
 
@@ -193,13 +194,24 @@ async fn run_app(address: String, port: String) {
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await.unwrap();
 }
 
+
+#[derive(Template)]
+#[template(path = "index.html")]
+struct IndexTemplate;
+
+
 async fn index() -> Html<String> {
-    Html(include_str!("./templates/index.html").to_string())
+    let index = IndexTemplate;
+    Html(index.render().unwrap())
 }
+
+#[derive(Template)]
+#[template(path = "404.html")]
+struct NotFoundTemplate;
 
 async fn handler_404() -> impl IntoResponse {
     tracing::warn!("Path not found.");
-    (StatusCode::NOT_FOUND, Html(include_str!("./templates/404.html").to_string()))
+    (StatusCode::NOT_FOUND, Html(NotFoundTemplate.render().unwrap()))
 }
 
 
