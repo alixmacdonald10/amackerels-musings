@@ -1,12 +1,11 @@
-use std::{net::SocketAddr, sync::Arc, time::Duration};
-use std::fmt;
+mod services;
 
-use askama::Template;
+use std::{net::SocketAddr, sync::Arc, time::Duration};
+
 use axum::{
-    http::{HeaderMap, HeaderName, HeaderValue, Method, Request, StatusCode},
-    response::{Html, IntoResponse, Response},
+    http::{HeaderName, HeaderValue, Method, Request},
+    response::Response,
     routing::get,
-    extract::Query,
     Router,
 };
 use clap::{value_parser, Arg, ArgAction, Command};
@@ -17,7 +16,10 @@ use tower_http::{
 };
 use tracing::{info_span, Level, Span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use serde::Deserialize;
+
+use crate::services::{handler_404, index, redirect};
+
+
 
 fn cmd() -> Command {
     Command::new("amacerels-musings")
@@ -113,10 +115,10 @@ async fn run_app(address: String, port: String) {
     // TODO: security headers
     // TODO: global 404 handler with Span
     // TODO: error handling and on error request.
-    // TODO: get span with IP addr
     let app = Router::new()
         .route("/", get(index))
         .route("/redirect", get(redirect))
+        // .route("/blog-post/:id", get(get_blog_post))
         .layer(
         // add middlewear, this is executed from top to bottom
         ServiceBuilder::new()
@@ -194,56 +196,3 @@ async fn run_app(address: String, port: String) {
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await.unwrap();
 }
 
-
-#[derive(Template)]
-#[template(path = "index.html")]
-struct IndexTemplate;
-
-
-async fn index() -> Html<String> {
-    let index = IndexTemplate;
-    Html(index.render().unwrap())
-}
-
-#[derive(Template)]
-#[template(path = "404.html")]
-struct NotFoundTemplate;
-
-async fn handler_404() -> impl IntoResponse {
-    tracing::warn!("Path not found.");
-    (StatusCode::NOT_FOUND, Html(NotFoundTemplate.render().unwrap()))
-}
-
-
-
-#[derive(Deserialize)]
-struct RedirectParams {
-    target: RedirectTarget
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "lowercase")]
-enum RedirectTarget {
-    Github,
-    LinkedIn
-}
-
-impl fmt::Display for RedirectTarget {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let url = match &self {
-            RedirectTarget::Github => "https://github.com/alixmacdonald10",
-            RedirectTarget::LinkedIn => "https://linkedin.com/in/alixmac"
-        }; 
-        write!(f, "{}", url)
-    }
-}
-
-async fn redirect(params: Query<RedirectParams>) -> impl IntoResponse {
-     
-    let url = format!("{}", params.target);
-    tracing::debug!("Redirecting to {}", &url);
-    
-    let mut headers = HeaderMap::new();
-    headers.insert("HX-Redirect", url.parse().unwrap());
-    (StatusCode::PERMANENT_REDIRECT, headers)
-}
