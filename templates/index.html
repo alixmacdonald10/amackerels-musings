@@ -5,12 +5,10 @@
 {% block head %}{% endblock %}
 
 {% block content %}
-  <h1>POSTS</h1>
-    <div
-      hx-get="/blog-post?id={{ blog_post.id }}"
-      hx-trigger="revealed"
-      hx-swap="afterend">
-      <h2>{{ blog_post.title }}</h2>
-      <p>{{ blog_post.content }}</p>
-    </div>
+  <div 
+    hx-get="/blog-post"
+    hx-trigger="load"
+    hx-swap="innerhtml">
+    POSTS
+  </div>
 {% endblock %}
