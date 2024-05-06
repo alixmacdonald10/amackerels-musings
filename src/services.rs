@@ -11,13 +11,6 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 
-struct BlogPost {
-    id: Uuid,
-    title: String,
-    content: String,
-}
-
-
 
 #[derive(Template)]
 #[template(path = "404.html")]
@@ -76,6 +69,12 @@ pub(crate) async fn redirect(params: Query<RedirectParams>) -> impl IntoResponse
 }
 
 
+struct BlogPost {
+    id: Uuid,
+    title: String,
+    content: String,
+}
+
 
 #[derive(Template)]
 #[template(path = "blog_post.html")]
@@ -96,7 +95,7 @@ pub(crate) async fn get_blog_post(Query(params): Query<GetBlogPostParams>) -> Ht
             tracing::debug!("No parameters passed. Getting latest blog post...");
 
             // TODO: get first 10 blog posts from db  and store in cache return latest post
-            let content = format!("
+            let content = "
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Et ultrices neque ornare aenean. Sit amet volutpat consequat mauris nunc congue. Nunc scelerisque viverra mauris in. Tempus imperdiet nulla malesuada pellentesque elit eget gravida cum. Eget nulla facilisi etiam dignissim diam quis enim lobortis scelerisque. Viverra accumsan in nisl nisi scelerisque. Feugiat sed lectus vestibulum mattis. Mi tempus imperdiet nulla malesuada. Leo vel fringilla est ullamcorper eget. Cursus sit amet dictum sit amet justo. Magna eget est lorem ipsum dolor sit amet. Fermentum et sollicitudin ac orci phasellus egestas tellus. Cursus metus aliquam eleifend mi in. Luctus venenatis lectus magna fringilla urna porttitor rhoncus dolor purus.
 
 Tempor orci dapibus ultrices in iaculis nunc sed augue. Mi sit amet mauris commodo quis imperdiet massa tincidunt nunc. Pharetra convallis posuere morbi leo urna molestie. Erat nam at lectus urna duis convallis convallis tellus. Odio eu feugiat pretium nibh. Sapien pellentesque habitant morbi tristique senectus et. Urna cursus eget nunc scelerisque viverra mauris in aliquam. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Tellus orci ac auctor augue mauris augue. Cras ornare arcu dui vivamus arcu felis bibendum. Faucibus interdum posuere lorem ipsum dolor. Et malesuada fames ac turpis egestas sed tempus. Ipsum dolor sit amet consectetur adipiscing. Mi bibendum neque egestas congue quisque. Semper auctor neque vitae tempus. Sit amet est placerat in. Habitant morbi tristique senectus et netus.
@@ -108,7 +107,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 Tempor orci dapibus ultrices in iaculis nunc sed augue. Mi sit amet mauris commodo quis imperdiet massa tincidunt nunc. Pharetra convallis posuere morbi leo urna molestie. Erat nam at lectus urna duis convallis convallis tellus. Odio eu feugiat pretium nibh. Sapien pellentesque habitant morbi tristique senectus et. Urna cursus eget nunc scelerisque viverra mauris in aliquam. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Tellus orci ac auctor augue mauris augue. Cras ornare arcu dui vivamus arcu felis bibendum. Faucibus interdum posuere lorem ipsum dolor. Et malesuada fames ac turpis egestas sed tempus. Ipsum dolor sit amet consectetur adipiscing. Mi bibendum neque egestas congue quisque. Semper auctor neque vitae tempus. Sit amet est placerat in. Habitant morbi tristique senectus et netus.
 
 Nisl rhoncus mattis rhoncus urna neque viverra justo nec. Ultrices sagittis orci a scelerisque purus. Proin libero nunc consequat interdum varius. Ac feugiat sed lectus vestibulum. Id venenatis a condimentum vitae sapien pellentesque habitant. Tortor at auctor urna nunc id cursus metus aliquam eleifend. Vel orci porta non pulvinar neque laoreet suspendisse interdum consectetur. In dictum non consectetur a erat nam at lectus. Vitae aliquet nec ullamcorper sit amet risus nullam eget. Urna molestie at elementum eu facilisis sed odio morbi. Cursus eget nunc scelerisque viverra mauris in aliquam. Ut faucibus pulvinar elementum integer enim neque. Augue mauris augue neque gravida. Faucibus nisl tincidunt eget nullam non nisi. Interdum consectetur libero id faucibus nisl tincidunt eget nullam non. In tellus integer feugiat scelerisque varius morbi.
-            ");
+            ".to_string();
                 
             BlogPost {
                 id: Uuid::now_v7(),
