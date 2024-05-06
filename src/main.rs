@@ -17,7 +17,7 @@ use tower_http::{
 use tracing::{info_span, Level, Span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::services::{handler_404, index, redirect};
+use crate::services::{get_blog_post, handler_404, index, redirect};
 
 
 
@@ -104,7 +104,7 @@ async fn run_app(address: String, port: String) {
     let governor_config = Arc::new(
         GovernorConfigBuilder::default()
             .per_second(20)
-            .burst_size(5)
+            .burst_size(10)
             .key_extractor(SmartIpKeyExtractor)
             .use_headers()
             .finish()
@@ -118,7 +118,7 @@ async fn run_app(address: String, port: String) {
     let app = Router::new()
         .route("/", get(index))
         .route("/redirect", get(redirect))
-        // .route("/blog-post/:id", get(get_blog_post))
+        .route("/blog-post", get(get_blog_post))
         .layer(
         // add middlewear, this is executed from top to bottom
         ServiceBuilder::new()

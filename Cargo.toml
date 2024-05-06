@@ -16,4 +16,4 @@ tower-http = { version = "0.5.2", features = ["trace", "request-id", "cors", "pr
 tower_governor = { version = "0.4.2", features = ["axum", "tracing"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-uuid = { version = "1.8.0", features = ["v4"] }
+uuid = { version = "1.8.0", features = ["v4", "v7", "serde"] }

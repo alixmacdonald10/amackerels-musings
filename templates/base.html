@@ -1,0 +1,32 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }} - A Mackerels Musings{% endblock %}</title>
+    {% block head %}{% endblock %}
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+      <div id="banner">
+        <h1>Welcome to My Musings</h1>
+        <div>
+          <div hx-get="/redirect?target=github">GitHub</div>
+          <div hx-get="/redirect?target=linkedin">LinkedIn</div>
+        </div>
+      </div>
+      <div>
+        <h1>What's this all about?</h1>
+        <p>Hi...I'm Alix, a software engineer who lives in the backend, loves Rust (sometimes Python) and needed an outlet to focus my ideas.</p>
+      </div>
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>
+
+
+
