@@ -1,10 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Not Found{% endblock %}
-
-{% block head %}{% endblock %}
-
-{% block content %}
-  <h1>Uh oh!</h1>
-  <p>The page you requested was not found.</p> 
-{% endblock %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Mackerels Musings</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+      <div id="content">
+        <h1>Uh oh!</h1>
+        <p>The page you requested was not found.</p> 
+      </div>
+    </main>
+  </body>
+</html>
